@@ -90,7 +90,7 @@ reco::CandidatePtr PATMultiCandFinalState::daughterUserCandUnsafe(size_t i,
   } else {
     throw cms::Exception("Uncastable") 
       << "The edm::Ptr at index " << i 
-      << "is not castable to a PAT Object." << std::endl;
+      << " is not castable to a PAT Object." << std::endl;
   }
 }
 
@@ -133,7 +133,7 @@ const reco::CandidatePtrVector& PATMultiCandFinalState::daughterOverlaps(
   } else {
     throw cms::Exception("Uncastable") 
       << "The edm::Ptr at index " << i 
-      << "is not castable to a PAT Object." << std::endl;
+      << " is not castable to a PAT Object." << std::endl;
   }
 }
 

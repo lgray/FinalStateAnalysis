@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "FinalStateAnalysis/DataFormats/interface/PATFinalStateEvent.h"
-
 #include "FinalStateAnalysis/DataFormats/interface/PATDiLeptonFinalStates.h"
 #include "FinalStateAnalysis/DataFormats/interface/PATTriLeptonFinalStates.h"
+#include "FinalStateAnalysis/DataFormats/interface/PATMultiCandFinalState.h"
 
 #include "DataFormats/Math/interface/Vector3D.h"
 
@@ -29,6 +29,7 @@ class testFinalState: public CppUnit::TestFixture {
   CPPUNIT_TEST(checkSetup);
   CPPUNIT_TEST(testDiLepton);
   CPPUNIT_TEST(testTriLepton);
+  CPPUNIT_TEST(testMultiFinalState);
   CPPUNIT_TEST(testOverlaps);
   CPPUNIT_TEST(testIndexGetter);
   CPPUNIT_TEST_SUITE_END();
@@ -40,6 +41,7 @@ class testFinalState: public CppUnit::TestFixture {
 
     void testDiLepton();
     void testTriLepton();
+    void testMultiFinalState();
     void testOverlaps();
     void testIndexGetter();
 
@@ -394,6 +396,56 @@ void testFinalState::testTriLepton() {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(finalState.eval("daughter(1).pt"), mockMuonPtr1_->pt(), 1e-6);
     CPPUNIT_ASSERT(finalState.filter("daughter(1).pt > 5"));
     CPPUNIT_ASSERT(!finalState.filter("daughter(1).pt < 5"));
+  }
+}
+
+void testFinalState::testMultiFinalState() {
+  std::vector<reco::CandidatePtr> candPtrVec;
+  candPtrVec.push_back(mockElectronPtr_);
+  candPtrVec.push_back(mockMuonPtr1_);
+  candPtrVec.push_back(mockMuonPtr2_);
+  
+  const PATMultiCandFinalState finalState(candPtrVec,
+					  mockEventPtr_);
+
+  CPPUNIT_ASSERT(finalState.daughter(0) == mockElectronPtr_.get());
+  CPPUNIT_ASSERT(finalState.daughter(1) == mockMuonPtr1_.get());
+  CPPUNIT_ASSERT(finalState.daughter(2) == mockMuonPtr2_.get());
+  CPPUNIT_ASSERT(finalState.met() == mockMETPtr_);
+  CPPUNIT_ASSERT(finalState.vertexObject() == nullVtx_);
+
+  {
+    PATFinalStateProxy subcand = finalState.subcand(1, 2);
+    reco::Candidate::LorentzVector expectP4 = mockMuonPtr1_->p4() + mockMuonPtr2_->p4();
+    int nDaughters = subcand->numberOfDaughters();
+    CPPUNIT_ASSERT_EQUAL(2, nDaughters);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(subcand->pt(), expectP4.pt(), 1e-6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(subcand->phi(), expectP4.phi(), 1e-6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(subcand->eta(), expectP4.eta(), 1e-6);
+    CPPUNIT_ASSERT(subcand->charge() == -2);
+  }
+
+
+  CPPUNIT_ASSERT(finalState.daughter(0)->charge() == 1);
+  CPPUNIT_ASSERT(finalState.daughter(2)->charge() == -1);
+
+  CPPUNIT_ASSERT(!finalState.likeSigned(0, 2));
+  CPPUNIT_ASSERT(finalState.likeSigned(1, 2));
+  CPPUNIT_ASSERT(finalState.likeFlavor(1, 2));
+  CPPUNIT_ASSERT(!finalState.likeFlavor(0, 2));
+
+  // Test eval
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(finalState.eval("daughter(1).pt"), mockMuonPtr1_->pt(), 1e-6);
+    CPPUNIT_ASSERT(finalState.filter("daughter(1).pt > 5"));
+    CPPUNIT_ASSERT(!finalState.filter("daughter(1).pt < 5"));
+    // test internal lazy parsing
+    // implicit cast to pat::Electron
+    CPPUNIT_ASSERT(finalState.filter("daughter(0).electronIDs.size == 0"));
+    // implicit cast to pat::Muon
+    CPPUNIT_ASSERT(!finalState.filter("daughter(1).isLooseMuon"));
+    // implicit cast to pat::Lepton    
+    CPPUNIT_ASSERT(finalState.filter("daughter(2).puChargedHadronIso == -1"));
   }
 }
 
