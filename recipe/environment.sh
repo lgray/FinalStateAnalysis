@@ -63,12 +63,12 @@ fi
 
 
 # Don't require a scram build to get updated scripts
-export PATH=$fsa/Utilities/scripts:$PATH
-export PATH=$fsa/StatTools/scripts:$PATH
+#export PATH=$fsa/Utilities/scripts:$PATH
+#export PATH=$fsa/StatTools/scripts:$PATH
 export PATH=$fsa/PlotTools/scripts:$PATH
-export PATH=$fsa/MetaData/scripts:$PATH
-export PATH=$fsa/PatTools/scripts:$PATH
-export PATH=$fsa/RecoTools/scripts:$PATH
+#export PATH=$fsa/MetaData/scripts:$PATH
+#export PATH=$fsa/PatTools/scripts:$PATH
+#export PATH=$fsa/RecoTools/scripts:$PATH
 
 # Add some shortcuts to example files for testing
 if [ "$MAJOR_VERSION" -eq "4" ]; then
@@ -89,7 +89,3 @@ export pu2011JSON=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions
 # https://hypernews.cern.ch/HyperNews/CMS/get/physics-announcements/2533.html
 export pu2012JSON=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/PileUp/pileup_JSON_DCSONLY_190389-208686_All_2012_pixelcorr.txt
 
-#check if dev area is up to date
-pushd $fsa
-check_git_updates.sh
-popd

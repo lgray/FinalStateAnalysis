@@ -1,4 +1,0 @@
-<use name="boost_regex"/>
-<environment>
-  <bin   file="testRegex.cc"></bin>
-</environment>
