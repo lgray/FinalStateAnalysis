@@ -29,6 +29,7 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
 #include "DataFormats/Provenance/interface/EventID.h"
 
 #include "TMatrixD.h"
@@ -59,6 +60,7 @@ class PATFinalStateEvent {
         const reco::GenParticleRefProd& genParticles,
         const edm::EventID& evtId,
         const GenEventInfoProduct& genEventInfoProd,
+        const GenFilterInfo& genFilterInfo,
         bool isRealData,
         const std::string& puScenario,
         const edm::RefProd<pat::ElectronCollection>& electronRefProd,
@@ -69,7 +71,7 @@ class PATFinalStateEvent {
         const reco::PFCandidateRefProd& pfRefProd,
         const reco::TrackRefProd& tracks,
         const reco::GsfTrackRefProd& gsfTracks,
-        const std::map<std::string, edm::Ptr<pat::MET> >& mets
+	const std::map<std::string, edm::Ptr<pat::MET> >& mets
     );
 
     /// Get PV
@@ -82,6 +84,8 @@ class PATFinalStateEvent {
     const lhef::HEPEUP& lesHouches() const;
     /// Get the GenEventInfo product
     const GenEventInfoProduct& genEventInfo() const;
+    /// Get weight for embedded samples
+    const GenFilterInfo& generatorFilter() const;
     /// Get FastJet rho
     double rho() const;
     /// Get trigger information
@@ -174,7 +178,8 @@ class PATFinalStateEvent {
     /// The FSA_DATA_FORMAT_VERSION def at the top of the .cc file should be
     /// incremented after each change to the data format.
     char version() const { return fsaDataFormatVersion_; }
-
+    float jetVariables(const reco::CandidatePtr jet, const std::string& myvar) const;
+      
   private:
     std::map<std::string, float> weights_;
     std::map<std::string, int> flags_;
@@ -189,6 +194,7 @@ class PATFinalStateEvent {
     reco::GenParticleRefProd genParticles_;
     edm::EventID evtID_;
     GenEventInfoProduct genEventInfoProduct_;
+    GenFilterInfo generatorFilter_;
     bool isRealData_;
     std::string puScenario_;
     char fsaDataFormatVersion_;

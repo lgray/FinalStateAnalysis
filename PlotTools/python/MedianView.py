@@ -14,9 +14,9 @@ class MedianView(object):
         central_hist = self.centv.Get(path)
         high_hist    = self.highv.Get(path) if self.highv else None
         low_hist     = self.lowv.Get(path)  if self.lowv  else None
-
         ret_hist = central_hist.Clone()
-        for bin in range(1, high_hist.GetNbinsX() + 1):
+        
+        for bin in range(1, ret_hist.GetNbinsX() + 1):
             error = quad(
                 central_hist.GetBinError(bin),
                 (high_hist.GetBinContent(bin) - central_hist.GetBinContent(bin))

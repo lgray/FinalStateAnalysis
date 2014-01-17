@@ -146,6 +146,9 @@ class PATFinalState : public pat::PATObject<reco::LeafCandidate> {
     /// Using the raw four vector
     double deltaPhiToMEt(int i) const;
 
+   // return the SVfit computed  mass
+    double SVfit(int i, int j) const;
+
     /// Get the transverse mass between two objects
     double mt(int i, const std::string& tagI,
         int j, const std::string& tagJ) const;
@@ -241,6 +244,12 @@ class PATFinalState : public pat::PATObject<reco::LeafCandidate> {
     PATFinalStateProxy subcand(int i, int j,
         int x=-1, int y=-1, int z=-1) const;
 
+    /// Build a subcandidate w/ fsr
+    PATFinalStateProxy subcandfsr( int i, int j ) const;
+
+    /// quad candidate p4 w/ fsr
+    LorentzVector p4fsr() const;
+
     /// Build a subcand using a tag string
     PATFinalStateProxy subcand(const std::string& tags) const;
 
@@ -277,6 +286,7 @@ class PATFinalState : public pat::PATObject<reco::LeafCandidate> {
     //a hot fix for the fact that no one cares about pat photons.
     const float getPhotonUserIsolation(size_t i,
 				       const std::string& key) const;
+    const float jetVariables(size_t i, const std::string& key) const;
 
 
   private:
