@@ -22,13 +22,13 @@ log = multiprocessing.log_to_stderr()
 log.setLevel(logging.WARNING)
 
 
-def xrootify(paths):
+def xrootify(paths,server):
     ''' Transform a file list generator on HDFS or OSG to use xrootd. '''
     for path in paths:
         if path.startswith('/hdfs'):
             path = path.replace('/hdfs', '')
         if path.startswith('/store'):
-            path = 'root://cmsxrootd.hep.wisc.edu/' + path
+            path = 'root://%s/'%server + path
         yield path
 
 
@@ -65,6 +65,10 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', action='store_const', const=True,
                         default=False, help='Print debug output')
 
+    parser.add_argument('--xrootdserver', type=str,
+                        default='xrootd.unl.edu',
+                        help='the domain name of the xrootd server to use')
+    
     args = parser.parse_args(args[1:])
 
     if args.verbose:
@@ -77,7 +81,7 @@ if __name__ == "__main__":
     else:
         log.info("Creating mega session with 1 workers - single mode")
 
-    file_list = list(xrootify(find_input_files(args.inputs)))
+    file_list = list(xrootify(find_input_files(args.inputs),args.xrootdserver))
 
     if not file_list:
         log.error("Dataset %s has no files!  Skipping..." % file_list)
