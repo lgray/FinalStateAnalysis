@@ -8,15 +8,18 @@ Author: Evan K. Friis, UW Madison
 
 '''
 
-from RecoLuminosity.LumiDB import argparse
 import logging
 import multiprocessing
 import os
 import sys
+sys.argv.append( '-b-' )
 
+from RecoLuminosity.LumiDB import argparse
 from FinalStateAnalysis.PlotTools.ChainProcessor import ChainProcessor
 from FinalStateAnalysis.PlotTools.Dispatcher import MegaDispatcher
 from FinalStateAnalysis.PlotTools.MegaPath import find_input_files
+
+sys.argv.remove('-b-')
 
 log = multiprocessing.log_to_stderr()
 log.setLevel(logging.WARNING)
